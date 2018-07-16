@@ -3,7 +3,7 @@ package gCommand
 import (
 	"os/exec"
 	"io/ioutil"
-	"lucky/gutil/gLog"
+	"github.com/lucky-lee/gutil/gLog"
 )
 
 func Exec(cmd *exec.Cmd) {

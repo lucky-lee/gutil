@@ -1,10 +1,10 @@
 package gFfmpeg
 
 import (
-	"lucky/gutil/gPath"
 	"os/exec"
-	"lucky/gutil/gFile"
-	"lucky/gutil/gCommand"
+	"github.com/lucky-lee/gutil/gPath"
+	"github.com/lucky-lee/gutil/gFile"
+	"github.com/lucky-lee/gutil/gCommand"
 )
 
 //amr -> mp3

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 	"io/ioutil"
-	"lucky/gutil/gMap"
-	"lucky/gutil/gLog"
+	"github.com/lucky-lee/gutil/gMap"
+	"github.com/lucky-lee/gutil/gLog"
 )
 
 //请求
