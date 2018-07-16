@@ -2,19 +2,19 @@ package gStr
 
 import (
 	"strconv"
-	"github.com/lucky-lee/gutil/gLog"
+	"github.com/lucky-lee/gutil/gFmt"
 )
 
 //字符串 ->int
 func ToInt(str string) (num int) {
 	if str == "" {
-		gLog.E("strToInt.error", "传入字符串为空")
+		gFmt.Println("strToInt.error", "传入字符串为空")
 		return 0
 	}
 	num, err := strconv.Atoi(str)
 
 	if err != nil {
-		gLog.E("strToInt.error", err)
+		gFmt.Println("strToInt.error", err)
 		return 0
 	}
 	return num
@@ -25,7 +25,7 @@ func ToFloat32(str string) float32 {
 	val, err := strconv.ParseFloat(str, 32)
 
 	if err != nil {
-		gLog.E("strToFloat.err", err)
+		gFmt.Println("strToFloat.err", err)
 		return 0
 	}
 	return float32(val)
@@ -36,7 +36,7 @@ func ToFloat64(str string) float64 {
 	val, err := strconv.ParseFloat(str, 64)
 
 	if err != nil {
-		gLog.E("strToFloat64Err", err)
+		gFmt.Println("strToFloat64Err", err)
 		return 0
 	}
 	return val
@@ -44,14 +44,14 @@ func ToFloat64(str string) float64 {
 
 func ToInt64(str string) int64 {
 	if str == "" {
-		gLog.E("strToInt64.error", "str is empty")
+		gFmt.Println("strToInt64.error", "str is empty")
 		return 0
 	}
 
 	retInt, err := strconv.ParseInt(str, 10, 64)
 
 	if err != nil {
-		gLog.E("strToInt64.error", "err")
+		gFmt.Println("strToInt64.error", "err")
 		return 0
 	}
 
