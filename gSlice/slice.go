@@ -1,8 +1,8 @@
 package gSlice
 
 import (
-	"lucky/gutil"
 	"net/url"
+	"github.com/lucky-lee/gutil"
 )
 
 //生成query string (strBean)

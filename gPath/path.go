@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 	"fmt"
-	"lucky/gutil"
+	"github.com/lucky-lee/gutil"
 )
 
 //当前目录

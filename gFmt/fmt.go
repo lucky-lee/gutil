@@ -2,7 +2,7 @@ package gFmt
 
 import (
 	"fmt"
-	"lucky/gutil/gTime"
+	"github.com/lucky-lee/gutil/gTime"
 )
 
 func Println(a ...interface{}) {

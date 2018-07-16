@@ -2,11 +2,11 @@ package gLog
 
 import (
 	"fmt"
-	"lucky/gutil/gPath"
-	"lucky/gutil/gTime"
-	"lucky/gutil/gFile"
-	"lucky/gutil"
 	"encoding/json"
+	"github.com/lucky-lee/gutil/gPath"
+	"github.com/lucky-lee/gutil/gTime"
+	"github.com/lucky-lee/gutil/gFile"
+	"github.com/lucky-lee/gutil"
 )
 
 func D(format string, value interface{}) {

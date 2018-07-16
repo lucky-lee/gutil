@@ -2,7 +2,7 @@ package gStr
 
 import (
 	"strconv"
-	"lucky/gutil/gLog"
+	"github.com/lucky-lee/gutil/gLog"
 )
 
 //字符串 ->int

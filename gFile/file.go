@@ -3,7 +3,7 @@ package gFile
 import (
 	"os"
 	"fmt"
-	"lucky/lyUtil"
+	"github.com/lucky-lee/gutil/gTime"
 )
 
 var fileMimeMap = map[string]string{
@@ -33,7 +33,7 @@ func Write(filePath string, content string) bool {
 	b := []byte(content + "\n")
 	fd, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
-		fmt.Println(lyUtil.TimeNowStr(), "Error", "write.file.err", err)
+		fmt.Println(gTime.StrNow(), "Error", "write.file.err", err)
 		return false
 	}
 

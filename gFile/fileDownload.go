@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 	"io"
-	"lucky/gutil/gFmt"
-	"lucky/gutil/gPath"
-	"lucky/gutil/gStr"
+	"github.com/lucky-lee/gutil/gFmt"
+	"github.com/lucky-lee/gutil/gPath"
+	"github.com/lucky-lee/gutil/gStr"
 )
 
 //文件下载
