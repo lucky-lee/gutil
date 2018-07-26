@@ -42,6 +42,7 @@ func ToFloat64(str string) float64 {
 	return val
 }
 
+//string to int64
 func ToInt64(str string) int64 {
 	if str == "" {
 		gFmt.Println("strToInt64.error", "str is empty")

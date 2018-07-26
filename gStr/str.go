@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"time"
 	"bytes"
+	"reflect"
+	"strconv"
 )
 
 //字符串截取
@@ -69,7 +71,38 @@ func Rand(length int, typeKey int) string {
 	return string(result)
 }
 
-//随机数
+//rand num
+//use you want num create it
 func RandNum(length int) string {
 	return Rand(length, 1)
+}
+
+//format any one
+func FormatAny(value interface{}) string {
+	return formatAny(reflect.ValueOf(value))
+}
+
+//format type any one to string
+func formatAny(value reflect.Value) string {
+	switch value.Kind() {
+	case reflect.Invalid:
+		return "invalid"
+	case reflect.Int, reflect.Int8, reflect.Int16,
+		reflect.Int32, reflect.Int64:
+		return strconv.FormatInt(value.Int(), 10)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16,
+		reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return strconv.FormatUint(value.Uint(), 10)
+	case reflect.Float32, reflect.Float64:
+		return strconv.FormatFloat(value.Float(), 'E', -1, 64)
+	case reflect.Bool:
+		return strconv.FormatBool(value.Bool())
+	case reflect.String:
+		return value.String()
+	case reflect.Chan, reflect.Func, reflect.Ptr, reflect.Slice, reflect.Map:
+		return value.Type().String() + " 0x" +
+			strconv.FormatUint(uint64(value.Pointer()), 16)
+	default: // reflect.Array, reflect.Struct, reflect.Interface
+		return value.Type().String() + " value"
+	}
 }

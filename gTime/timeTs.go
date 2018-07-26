@@ -16,8 +16,8 @@ func TsFormatYmd(unix int64) string {
 	}
 }
 
-//时间戳 格式化 当前md
-func TsFormatNowMd(ts int64) string {
+//时间戳 格式化 md
+func TsFormatMd(ts int64) string {
 	t, isNow := isNowYear(ts)
 
 	if isNow {
@@ -27,8 +27,8 @@ func TsFormatNowMd(ts int64) string {
 	}
 }
 
-//时间戳 格式化 当前hi
-func TsFormatNowHi(ts int64) string {
+//时间戳 格式化 hi
+func TsFormatHi(ts int64) string {
 	t, isNow := isNowYear(ts)
 
 	if isNow {
