@@ -1,15 +1,22 @@
 package gMysql
 
-import "database/sql"
+import (
+	"database/sql"
+	"github.com/lucky-lee/gutil/gLog"
+)
 
 //exec easy
 func execEasy(sqlStr string, db *sql.DB) bool {
+	gLog.Sql("execEasySql", sqlStr) //add sql log
+
 	result, err := db.Exec(sqlStr)
 	return exec(result, err)
 }
 
 //exec easy and return last id
 func execEasyLastId(sqlStr string, db *sql.DB) int64 {
+	gLog.Sql("execEasyLastIdSql", sqlStr) //add sql log
+
 	result, err := db.Exec(sqlStr)
 	return execLastId(result, err)
 }
