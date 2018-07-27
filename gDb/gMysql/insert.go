@@ -58,7 +58,13 @@ func (i *DbInsert) ToSql() string {
 
 	for key, val := range i.valueMap {
 		keyArr = append(keyArr, key)
-		valArr = append(valArr, gStr.FormatAny(val))
+		switch val.(type) {
+		case string:
+			valArr = append(valArr, fmt.Sprintf("'%s'", val))
+		default:
+			valArr = append(valArr, gStr.FormatAny(val))
+		}
+
 	}
 
 	keyStr := strings.Join(keyArr, ",")
