@@ -9,12 +9,28 @@ type DbDelete struct {
 	DbBase
 }
 
+//Deprecated
 func NewDelete(db *sql.DB) *DbDelete {
 	var d DbDelete
 
 	d.db = db
 
 	return &d
+}
+
+//before you need set default database
+func NewDeletes() *DbDelete {
+	var d DbDelete
+
+	d.db = defDb
+
+	return &d
+}
+
+//set database
+func (d *DbDelete) Db(db *sql.DB) *DbDelete {
+	d.db = db
+	return d
 }
 
 //set table
@@ -33,7 +49,7 @@ func (d *DbDelete) WhereSymbol(key string, symbol string, val interface{}) *DbDe
 		d.whereMap = make(map[string]Where)
 	}
 
-	d.whereMap[key] = NewWhere(key, symbol, val)
+	d.whereMap[key] = NewWhere(key, symbol, pubQuoteStr(val))
 
 	return d
 }

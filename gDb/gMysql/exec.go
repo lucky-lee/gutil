@@ -24,12 +24,14 @@ func execEasyLastId(sqlStr string, db *sql.DB) int64 {
 //exec
 func exec(result sql.Result, err error) bool {
 	if err != nil {
+		gLog.E("sqlErr", err)
 		return false
 	}
 
-	rowsAffected, err1 := result.RowsAffected()
+	rowsAffected, err := result.RowsAffected()
 
-	if err1 != nil {
+	if err != nil {
+		gLog.E("sqlErr", err)
 		return false
 	}
 
@@ -43,12 +45,14 @@ func exec(result sql.Result, err error) bool {
 //exec and return last last id
 func execLastId(result sql.Result, err error) int64 {
 	if err != nil {
+		gLog.E("sqlErr", err)
 		return 0
 	}
 
-	id, err1 := result.LastInsertId()
+	id, err := result.LastInsertId()
 
-	if err1 != nil {
+	if err != nil {
+		gLog.E("sqlErr", err)
 		return 0
 	}
 

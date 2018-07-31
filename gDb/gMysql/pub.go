@@ -5,6 +5,8 @@ import (
 	"strings"
 	"database/sql"
 	"github.com/lucky-lee/gutil/gStr"
+	"reflect"
+	"strconv"
 )
 
 type DbBase struct {
@@ -21,6 +23,13 @@ type Where struct {
 	Key    string
 	Symbol string
 	Val    interface{}
+}
+
+var defDb *sql.DB //默认的数据库
+
+//设置默认数据库
+func SetDefDb(db *sql.DB) {
+	defDb = db
 }
 
 func NewWhere(key string, symbol string, val interface{}) Where {
@@ -42,7 +51,7 @@ func pubSetStr(setMap map[string]interface{}) string {
 	var sets []string
 
 	for key, val := range setMap {
-		str := fmt.Sprintf("%s=%s", key, gStr.FormatAny(val))
+		str := fmt.Sprintf(`%s=%s`, key, gStr.FormatAny(val))
 		sets = append(sets, str)
 	}
 
@@ -63,4 +72,16 @@ func pubWhereStr(whereMap map[string]Where) string {
 	}
 
 	return strings.Join(wheres, " and ")
+}
+
+//quote string
+func pubQuoteStr(val interface{}) interface{} {
+	value := reflect.ValueOf(val)
+
+	switch value.Kind() {
+	case reflect.String:
+		return strconv.Quote(value.String())
+	default:
+		return val
+	}
 }

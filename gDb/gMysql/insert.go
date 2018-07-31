@@ -13,12 +13,28 @@ type DbInsert struct {
 }
 
 //new insert struct
+//Deprecated
 func NewInsert(db *sql.DB) *DbInsert {
 	var d DbInsert
 
 	d.db = db
 
 	return &d
+}
+
+//before you need set default database
+func NewInserts() *DbInsert {
+	var i DbInsert
+
+	i.db = defDb
+
+	return &i
+}
+
+//set database
+func (i *DbInsert) Db(db *sql.DB) *DbInsert {
+	i.db = db
+	return i
 }
 
 //set table

@@ -11,12 +11,29 @@ type DbUpdate struct {
 	setMap map[string]interface{}
 }
 
+//Deprecated
+//new update struct
 func NewUpdate(db *sql.DB) *DbUpdate {
 	var u DbUpdate
 
 	u.db = db
 
 	return &u
+}
+
+//before you need set default database
+func NewUpdates() *DbUpdate {
+	var u DbUpdate
+
+	u.db = defDb
+
+	return &u
+}
+
+//set database
+func (u *DbUpdate) Db(db *sql.DB) *DbUpdate {
+	u.db = db
+	return u
 }
 
 //set table
@@ -32,8 +49,7 @@ func (u *DbUpdate) Set(key string, val interface{}) *DbUpdate {
 		u.setMap = make(map[string]interface{})
 	}
 
-	u.setMap[key] = val
-
+	u.setMap[key] = pubQuoteStr(val)
 	return u
 }
 
@@ -48,7 +64,7 @@ func (u *DbUpdate) WhereSymbol(key string, symbol string, val interface{}) *DbUp
 		u.whereMap = make(map[string]Where)
 	}
 
-	u.whereMap[key] = NewWhere(key,symbol,val)
+	u.whereMap[key] = NewWhere(key, symbol, pubQuoteStr(val))
 
 	return u
 }
