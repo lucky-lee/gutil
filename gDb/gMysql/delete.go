@@ -9,17 +9,8 @@ type DbDelete struct {
 	DbBase
 }
 
-//Deprecated
-func NewDelete(db *sql.DB) *DbDelete {
-	var d DbDelete
-
-	d.db = db
-
-	return &d
-}
-
 //before you need set default database
-func NewDeletes() *DbDelete {
+func NewDelete() *DbDelete {
 	var d DbDelete
 
 	d.db = defDb

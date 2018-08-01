@@ -25,6 +25,10 @@ type Where struct {
 	Val    interface{}
 }
 
+const (
+	PAGE_SIZE = 10
+)
+
 var defDb *sql.DB //默认的数据库
 
 //设置默认数据库

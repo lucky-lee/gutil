@@ -12,18 +12,8 @@ type DbInsert struct {
 	valueMap map[string]interface{}
 }
 
-//new insert struct
-//Deprecated
-func NewInsert(db *sql.DB) *DbInsert {
-	var d DbInsert
-
-	d.db = db
-
-	return &d
-}
-
 //before you need set default database
-func NewInserts() *DbInsert {
+func NewInsert() *DbInsert {
 	var i DbInsert
 
 	i.db = defDb

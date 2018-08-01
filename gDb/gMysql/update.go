@@ -11,18 +11,8 @@ type DbUpdate struct {
 	setMap map[string]interface{}
 }
 
-//Deprecated
-//new update struct
-func NewUpdate(db *sql.DB) *DbUpdate {
-	var u DbUpdate
-
-	u.db = db
-
-	return &u
-}
-
 //before you need set default database
-func NewUpdates() *DbUpdate {
+func NewUpdate() *DbUpdate {
 	var u DbUpdate
 
 	u.db = defDb
