@@ -20,7 +20,6 @@ type DbSelect struct {
 	order    string
 	limit    string
 	tags     []string
-	fields   []string
 	bean     interface{}
 	NameMap  map[string]interface{}
 	Values   []interface{}
@@ -44,6 +43,12 @@ func (s *DbSelect) Db(db *sql.DB) *DbSelect {
 //set table
 func (s *DbSelect) Table(t string) *DbSelect {
 	s.table = t
+	return s
+}
+
+//set fields
+func (s *DbSelect) Fields(f string) *DbSelect {
+	s.field = f
 	return s
 }
 
