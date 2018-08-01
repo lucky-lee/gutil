@@ -10,15 +10,15 @@ golang util
 
 	SetDefDb(db1)
 	//exec
-	NewUpdates().Table("test").Set("num", 1).Where("id", 1).Do()
-	NewUpdates().Table("test").Set("num", 1).Where("id", 1).Incr()
-	NewUpdates().Table("test").Set("num", 1).Where("id", 1).Decr()
-	NewUpdates().Table("test").Set("num", 1).Where("id", 1).ToSql()
+	NewUpdate().Table("test").Set("num", 1).Where("id", 1).Do()
+	NewUpdate().Table("test").Set("num", 1).Where("id", 1).Incr()
+	NewUpdate().Table("test").Set("num", 1).Where("id", 1).Decr()
+	NewUpdate().Table("test").Set("num", 1).Where("id", 1).ToSql()
 	//exchange database
-	NewUpdates().Db(db2).Table("test1").Set("num", 1).Where("id", 1).Do()
-	NewUpdates().Db(db2).Table("test1").Set("num", 1).Where("id", 1).Incr()
-	NewUpdates().Db(db2).Table("test1").Set("num", 1).Where("id", 1).Decr()
-	NewUpdates().Db(db2).Table("test1").Set("num", 1).Where("id", 1).ToSql()
+	NewUpdate().Db(db2).Table("test1").Set("num", 1).Where("id", 1).Do()
+	NewUpdate().Db(db2).Table("test1").Set("num", 1).Where("id", 1).Incr()
+	NewUpdate().Db(db2).Table("test1").Set("num", 1).Where("id", 1).Decr()
+	NewUpdate().Db(db2).Table("test1").Set("num", 1).Where("id", 1).ToSql()
 
 //example delete
 
@@ -29,13 +29,13 @@ golang util
 
 	SetDefDb(db1)
 	//exec
-	NewDeletes().Table("test").Where("id", 1).Do()
-	NewDeletes().Table("test").Where("id", 1).ToSql()
-	NewDeletes().Table("test").WhereSymbol("id", ">=", 1).ToSql()
+	NewDelete().Table("test").Where("id", 1).Do()
+	NewDelete().Table("test").Where("id", 1).ToSql()
+	NewDelete().Table("test").WhereSymbol("id", ">=", 1).ToSql()
 	//exchange database
-	NewDeletes().Db(db2).Table("test").Where("id", 1).Do()
-	NewDeletes().Db(db2).Table("test").Where("id", 1).ToSql()
-	NewDeletes().Db(db2).Table("test").WhereSymbol("id", ">=", 1).ToSql()
+	NewDelete().Db(db2).Table("test").Where("id", 1).Do()
+	NewDelete().Db(db2).Table("test").Where("id", 1).ToSql()
+	NewDelete().Db(db2).Table("test").WhereSymbol("id", ">=", 1).ToSql()
 
 
 //example insert
@@ -47,12 +47,12 @@ golang util
 
 	SetDefDb(db1)
 	//exec
-	NewInserts().Table("test").Value("title", "test").Value("title2", "test").Do()
-	NewInserts().Table("test").Value("title", "test").Value("title2", "test").DoLastId()
-	NewInserts().Table("test").Value("title", "test").Value("title2", "test").ToSql()
+	NewInsert().Table("test").Value("title", "test").Value("title2", "test").Do()
+	NewInsert().Table("test").Value("title", "test").Value("title2", "test").DoLastId()
+	NewInsert().Table("test").Value("title", "test").Value("title2", "test").ToSql()
 	//exchange database
-	NewInserts().Db(db2).Table("test").Value("title", "test").Value("title2", "test").Do()
-	NewInserts().Db(db2).Table("test").Value("title", "test").Value("title2", "test").DoLastId()
-	NewInserts().Db(db2).Table("test").Value("title", "test").Value("title2", "test").ToSql()
+	NewInsert().Db(db2).Table("test").Value("title", "test").Value("title2", "test").Do()
+	NewInsert().Db(db2).Table("test").Value("title", "test").Value("title2", "test").DoLastId()
+	NewInsert().Db(db2).Table("test").Value("title", "test").Value("title2", "test").ToSql()
 
 
