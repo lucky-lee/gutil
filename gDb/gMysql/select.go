@@ -73,7 +73,7 @@ func (s *DbSelect) WhereSymbol(key string, symbol string, val interface{}) *DbSe
 }
 
 //order by asc
-func (s *DbSelect) OrderAsc(fields ...string) {
+func (s *DbSelect) OrderAsc(fields ...string) *DbSelect {
 	if s.orderMap == nil {
 		s.orderMap = make(map[string]string)
 	}
@@ -81,10 +81,12 @@ func (s *DbSelect) OrderAsc(fields ...string) {
 	for _, val := range fields {
 		s.orderMap[val] = "asc"
 	}
+
+	return s
 }
 
 //order by desc
-func (s *DbSelect) OrderDesc(fields ...string) {
+func (s *DbSelect) OrderDesc(fields ...string) *DbSelect {
 	if s.orderMap == nil {
 		s.orderMap = make(map[string]string)
 	}
@@ -92,6 +94,8 @@ func (s *DbSelect) OrderDesc(fields ...string) {
 	for _, val := range fields {
 		s.orderMap[val] = "desc"
 	}
+
+	return s
 }
 
 func (s *DbSelect) LimitPage(page int, pageSize int) *DbSelect {
@@ -214,11 +218,18 @@ func (s *DbSelect) ToSql() string {
 		sb.WriteString(s.limit)
 	}
 
+	gLog.Sql("sqlString", sb.String())
+
 	return sb.String()
 }
 
 //生成field
 func (s *DbSelect) toFieldStr() {
+
+	if s.bean == nil { //if not set bean and return
+		return
+	}
+
 	if s.NameMap == nil {
 		s.NameMap = make(map[string]interface{})
 	}
