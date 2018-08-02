@@ -12,6 +12,7 @@ import (
 type DbBase struct {
 	db       *sql.DB
 	table    string
+	tableAs  string //as name
 	whereMap map[string]Where
 }
 
@@ -27,6 +28,7 @@ type Where struct {
 
 const (
 	PAGE_SIZE = 10
+	DB_TAG    = "field"
 )
 
 var defDb *sql.DB //默认的数据库
@@ -70,8 +72,8 @@ func pubWhereStr(whereMap map[string]Where) string {
 
 	var wheres []string
 
-	for key, val := range whereMap {
-		str := fmt.Sprintf("%s %s %s", key, val.Symbol, gStr.FormatAny(val.Val))
+	for _, val := range whereMap {
+		str := fmt.Sprintf("%s %s %s", val.Key, val.Symbol, gStr.FormatAny(val.Val))
 		wheres = append(wheres, str)
 	}
 
@@ -87,5 +89,13 @@ func pubQuoteStr(val interface{}) interface{} {
 		return strconv.Quote(value.String())
 	default:
 		return val
+	}
+}
+
+func fieldName(asName string, fieldName string) string {
+	if asName == "" {
+		return fieldName
+	} else {
+		return gStr.Merge(asName, ".", fieldName)
 	}
 }

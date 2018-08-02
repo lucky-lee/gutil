@@ -13,18 +13,27 @@ import (
 
 type DbSelect struct {
 	DbBase
-	field    string
-	join     string
-	group    string
-	having   string
-	order    string
-	limit    string
-	tags     []string
-	bean     interface{}
-	NameMap  map[string]interface{}
-	Values   []interface{}
-	orderMap map[string]string
+	field      string
+	join       string
+	group      string
+	having     string
+	order      string
+	limit      string
+	tableIndex uint8
+	bean       interface{}
+	fieldArr   []string
+	Values     []interface{}
+	orderMap   map[string]string
+	joinMap    map[string]string
 }
+
+type BeanSqlJoin struct {
+	Table    string
+	TableAs  string
+	FieldArr []string
+}
+
+//type JoinFunc func() (b BeanSqlJoin)
 
 func NewSelect() *DbSelect {
 	var s DbSelect
@@ -43,18 +52,72 @@ func (s *DbSelect) Db(db *sql.DB) *DbSelect {
 //set table
 func (s *DbSelect) Table(t string) *DbSelect {
 	s.table = t
+	s.tableAs = "t0"
+	s.tableIndex = 1
 	return s
 }
 
-//set fields
-func (s *DbSelect) Fields(f string) *DbSelect {
-	s.field = f
+////set table and as name
+//func (s *DbSelect) TableAs(t string, a string) *DbSelect {
+//	s.table = t
+//	s.tableAs = a
+//
+//	return s
+//}
+
+//
+func (s *DbSelect) Select(p ...string) *DbSelect {
+	if s.fieldArr == nil {
+		s.fieldArr = make([]string, 0)
+	}
+
+	for _, val := range p {
+		s.fieldArr = append(s.fieldArr, fieldName(s.tableAs, val))
+	}
+
 	return s
 }
 
 //set bean
 func (s *DbSelect) Bean(b interface{}) *DbSelect {
 	s.bean = b
+
+	t := reflect.TypeOf(s.bean)
+
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+
+		tag := field.Tag.Get("name")
+
+		if tag == "" {
+			continue
+		}
+
+		if tag == "-" {
+			continue
+		}
+
+		s.fieldArr = append(s.fieldArr, tag)
+	}
+
+	return s
+}
+
+//join table
+func (s *DbSelect) Join(joinTable string, selfOn string, symbol string, otherOn string, joinFields ...string) *DbSelect {
+
+	if len(s.fieldArr) == 0 {
+		s.fieldArr = append(s.fieldArr, s.tableAs+".*")
+	}
+
+	tAs := fmt.Sprintf("t%d", s.tableIndex)
+	s.tableIndex += 1
+
+	for _, val := range joinFields {
+		s.fieldArr = append(s.fieldArr, fieldName(tAs, val))
+	}
+
+	s.join += gStr.Merge(" join ", joinTable, " as ", tAs, " on ", tAs, ".", selfOn, symbol, s.tableAs, ".", otherOn, " ")
 	return s
 }
 
@@ -67,16 +130,15 @@ func (s *DbSelect) WhereSymbol(key string, symbol string, val interface{}) *DbSe
 		s.whereMap = make(map[string]Where)
 	}
 
-	s.whereMap[key] = NewWhere(key, symbol, val)
+	wKey := fieldName(s.tableAs, key)
+	s.whereMap[wKey] = NewWhere(wKey, symbol, val)
 
 	return s
 }
 
 //order by asc
 func (s *DbSelect) OrderAsc(fields ...string) *DbSelect {
-	if s.orderMap == nil {
-		s.orderMap = make(map[string]string)
-	}
+	s.initOrderMap()
 
 	for _, val := range fields {
 		s.orderMap[val] = "asc"
@@ -87,9 +149,7 @@ func (s *DbSelect) OrderAsc(fields ...string) *DbSelect {
 
 //order by desc
 func (s *DbSelect) OrderDesc(fields ...string) *DbSelect {
-	if s.orderMap == nil {
-		s.orderMap = make(map[string]string)
-	}
+	s.initOrderMap()
 
 	for _, val := range fields {
 		s.orderMap[val] = "desc"
@@ -191,8 +251,17 @@ func (s *DbSelect) do() {
 
 //create sql string
 func (s *DbSelect) ToSql() string {
-	s.toFieldStr()
+	if s.field == "" {
+		if len(s.fieldArr) > 0 {
+			s.toFieldArrStr()
+		}
+	}
+
 	s.toOrderStr()
+
+	if s.field == "" { //if equal empty and set it all
+		s.field = "*"
+	}
 
 	var sb strings.Builder
 
@@ -200,6 +269,15 @@ func (s *DbSelect) ToSql() string {
 	sb.WriteString(s.field)
 	sb.WriteString(" from ")
 	sb.WriteString(s.table)
+
+	if s.tableAs != "" {
+		sb.WriteString(" as ")
+		sb.WriteString(s.tableAs)
+	}
+
+	if s.join != "" {
+		sb.WriteString(s.join)
+	}
 
 	//where
 	if len(s.whereMap) > 0 {
@@ -223,39 +301,12 @@ func (s *DbSelect) ToSql() string {
 	return sb.String()
 }
 
-//生成field
-func (s *DbSelect) toFieldStr() {
-
-	if s.bean == nil { //if not set bean and return
+func (s *DbSelect) toFieldArrStr() {
+	if len(s.fieldArr) == 0 {
 		return
 	}
 
-	if s.NameMap == nil {
-		s.NameMap = make(map[string]interface{})
-	}
-
-	t := reflect.TypeOf(s.bean)
-
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
-
-		tag := field.Tag.Get("name")
-
-		if tag == "" {
-			continue
-		}
-
-		if tag == "-" {
-			continue
-		}
-
-		s.tags = append(s.tags, tag)
-		s.NameMap[tag] = field.Name
-	}
-
-	if s.field == "" {
-		s.field = strings.Join(s.tags, ",")
-	}
+	s.field = strings.Join(s.fieldArr, ",")
 }
 
 //create order by string
@@ -275,5 +326,13 @@ func (s *DbSelect) toOrderStr() {
 
 	if joinStr != "" {
 		s.order = " order by " + joinStr
+	}
+}
+
+//init function
+
+func (s *DbSelect) initOrderMap() {
+	if s.orderMap == nil {
+		s.orderMap = make(map[string]string)
 	}
 }
