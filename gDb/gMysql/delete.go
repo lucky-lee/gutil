@@ -40,7 +40,7 @@ func (d *DbDelete) WhereSymbol(key string, symbol string, val interface{}) *DbDe
 		d.whereMap = make(map[string]Where)
 	}
 
-	d.whereMap[key] = NewWhere(key, symbol, pubQuoteStr(val))
+	d.whereMap[key] = NewWhere(key, symbol, val, true)
 
 	return d
 }
@@ -48,7 +48,7 @@ func (d *DbDelete) WhereSymbol(key string, symbol string, val interface{}) *DbDe
 func (d *DbDelete) Do() bool {
 	sqlStr := d.ToSql()
 
-	return execEasy(sqlStr, d.db)
+	return ExecEasy(sqlStr, d.db)
 }
 
 func (d *DbDelete) ToSql() string {

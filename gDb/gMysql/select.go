@@ -1,14 +1,14 @@
 package gMysql
 
 import (
-	"strings"
-	"reflect"
-	"github.com/lucky-lee/gutil/gLog"
+	"database/sql"
 	"fmt"
 	"github.com/lucky-lee/gutil/gFmt"
-	"strconv"
-	"database/sql"
+	"github.com/lucky-lee/gutil/gLog"
 	"github.com/lucky-lee/gutil/gStr"
+	"reflect"
+	"strconv"
+	"strings"
 )
 
 type DbSelect struct {
@@ -22,7 +22,6 @@ type DbSelect struct {
 	tableIndex uint8
 	bean       interface{}
 	fieldArr   []string
-	Values     []interface{}
 	orderMap   map[string]string
 	joinMap    map[string]string
 }
@@ -87,7 +86,8 @@ func (s *DbSelect) Bean(b interface{}) *DbSelect {
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 
-		tag := field.Tag.Get("name")
+		tag := field.Tag.Get(DB_TAG)
+		tagIfnull := field.Tag.Get(DB_TAG_IFNULL)
 
 		if tag == "" {
 			continue
@@ -97,7 +97,12 @@ func (s *DbSelect) Bean(b interface{}) *DbSelect {
 			continue
 		}
 
-		s.fieldArr = append(s.fieldArr, tag)
+		if tagIfnull == "true" { //if equal true use mysql ifnull
+			tagStr := fmt.Sprintf("ifnull(%s,'') as %s", tag, tag)
+			s.fieldArr = append(s.fieldArr, fieldName(s.tableAs, tagStr))
+		} else {
+			s.fieldArr = append(s.fieldArr, fieldName(s.tableAs, tag))
+		}
 	}
 
 	return s
@@ -122,17 +127,33 @@ func (s *DbSelect) Join(joinTable string, selfOn string, symbol string, otherOn 
 }
 
 func (s *DbSelect) Where(key string, val interface{}) *DbSelect {
-	return s.WhereSymbol(key, "=", val)
+	return s.WhereSymbolQuote(key, "=", val, true)
 }
 
 func (s *DbSelect) WhereSymbol(key string, symbol string, val interface{}) *DbSelect {
+	s.WhereSymbolQuote(key, symbol, val, true)
+	return s
+}
+
+func (s *DbSelect) WhereSymbolQuote(key string, symbol string, val interface{}, valQuote bool) *DbSelect {
 	if s.whereMap == nil {
 		s.whereMap = make(map[string]Where)
 	}
 
 	wKey := fieldName(s.tableAs, key)
-	s.whereMap[wKey] = NewWhere(wKey, symbol, val)
+	s.whereMap[wKey] = NewWhere(wKey, symbol, val, valQuote)
 
+	return s
+}
+func (s *DbSelect) WhereIn(key string, ins string) *DbSelect {
+	insStr := gStr.Merge("(", ins, ")")
+	s.WhereSymbolQuote(key, "in", insStr, false)
+
+	return s
+}
+
+func (s *DbSelect) GroupBy(column string) *DbSelect {
+	s.group = " group by " + column
 	return s
 }
 
@@ -159,7 +180,7 @@ func (s *DbSelect) OrderDesc(fields ...string) *DbSelect {
 }
 
 func (s *DbSelect) LimitPage(page int, pageSize int) *DbSelect {
-	if page > 0 {
+	if page > 1 {
 		pageIndex := (page - 1) * pageSize
 		s.LimitIndex(pageIndex, pageSize)
 	}
@@ -285,6 +306,9 @@ func (s *DbSelect) ToSql() string {
 		sb.WriteString(pubWhereStr(s.whereMap))
 	}
 
+	if s.group != "" {
+		sb.WriteString(s.group)
+	}
 	//order by
 	if s.order != "" {
 		sb.WriteString(s.order)
@@ -296,11 +320,15 @@ func (s *DbSelect) ToSql() string {
 		sb.WriteString(s.limit)
 	}
 
-	gLog.Sql("sqlString", sb.String())
+	gLog.Sql("select", sb.String())
 
 	return sb.String()
 }
 
+func (s *DbSelect) ToSqlOne() string {
+	s.LimitIndex(0, 1)
+	return s.ToSql()
+}
 func (s *DbSelect) toFieldArrStr() {
 	if len(s.fieldArr) == 0 {
 		return

@@ -6,7 +6,7 @@ import (
 )
 
 //exec easy
-func execEasy(sqlStr string, db *sql.DB) bool {
+func ExecEasy(sqlStr string, db *sql.DB) bool {
 	gLog.Sql("execEasySql", sqlStr) //add sql log
 
 	result, err := db.Exec(sqlStr)

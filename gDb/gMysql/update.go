@@ -3,12 +3,12 @@ package gMysql
 import (
 	"database/sql"
 	"fmt"
-	"github.com/lucky-lee/gutil/gStr"
+	"reflect"
 )
 
 type DbUpdate struct {
 	DbBase
-	setMap map[string]interface{}
+	setMap map[string]Set
 }
 
 //before you need set default database
@@ -33,13 +33,33 @@ func (u *DbUpdate) Table(s string) *DbUpdate {
 	return u
 }
 
+func (u *DbUpdate) Bean(b interface{}) *DbUpdate {
+	value := reflect.ValueOf(b)
+
+	//if value is ptr
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+	}
+
+	for index := 0; index < value.NumField(); index++ {
+		t := value.Type().Field(index)
+		v := value.Field(index)
+
+		if t.Tag.Get(DB_TAG) != "" {
+			u.Set(t.Tag.Get(DB_TAG), v.Interface())
+		}
+	}
+
+	return u
+}
+
 //set
 func (u *DbUpdate) Set(key string, val interface{}) *DbUpdate {
 	if u.setMap == nil {
-		u.setMap = make(map[string]interface{})
+		u.setMap = make(map[string]Set)
 	}
 
-	u.setMap[key] = pubQuoteStr(val)
+	u.setMap[key] = NewSet(key, val, true)
 	return u
 }
 
@@ -54,14 +74,14 @@ func (u *DbUpdate) WhereSymbol(key string, symbol string, val interface{}) *DbUp
 		u.whereMap = make(map[string]Where)
 	}
 
-	u.whereMap[key] = NewWhere(key, symbol, pubQuoteStr(val))
+	u.whereMap[key] = NewWhere(key, symbol, val, true)
 
 	return u
 }
 
 //update and return bool
 func (u *DbUpdate) Do() bool {
-	return execEasy(u.ToSql(), u.db)
+	return ExecEasy(u.ToSql(), u.db)
 }
 
 func (u *DbUpdate) ToSql() string {
@@ -75,20 +95,42 @@ func (u *DbUpdate) ToSql() string {
 
 //increase
 func (u *DbUpdate) Incr() bool {
-	for key, val := range u.setMap {
-		u.setMap[key] = fmt.Sprintf("%s+%s", key, gStr.FormatAny(val))
-	}
-
+	u.incr()
 	return u.Do()
+}
+
+//increase sql string
+func (u *DbUpdate) IncrSql() string {
+	u.incr()
+	return u.ToSql()
 }
 
 //decrease
 func (u *DbUpdate) Decr() bool {
-	for key, val := range u.setMap {
-		u.setMap[key] = fmt.Sprintf("%s-%s", key, gStr.FormatAny(val))
-	}
-
+	u.decr()
 	return u.Do()
+}
+
+//decrease sql string
+func (u *DbUpdate) DecrSql() string {
+	u.decr()
+	return u.ToSql()
+}
+
+//increase
+func (u *DbUpdate) incr() {
+	for key, val := range u.setMap {
+		v := fmt.Sprintf("%s+%v", key, val.Val)
+		u.setMap[key] = NewSet(key, v, false)
+	}
+}
+
+//decrease
+func (u *DbUpdate) decr() {
+	for key, val := range u.setMap {
+		v := fmt.Sprintf("%s-%v", key, val.Val)
+		u.setMap[key] = NewSet(key, v, false)
+	}
 }
 
 //修改-单条(事务)

@@ -3,10 +3,10 @@ package gMysql
 import (
 	"database/sql"
 	"fmt"
-	"strings"
+	"github.com/lucky-lee/gutil/gLog"
 	"github.com/lucky-lee/gutil/gStr"
 	"reflect"
-	"github.com/lucky-lee/gutil/gFmt"
+	"strings"
 )
 
 type DbInsert struct {
@@ -52,7 +52,7 @@ func (i *DbInsert) Beans(bs []interface{}) *DbInsert {
 //insert and return bool
 func (i *DbInsert) Do() bool {
 	sqlStr := i.ToSql()
-	return execEasy(sqlStr, i.db)
+	return ExecEasy(sqlStr, i.db)
 }
 
 //insert and return last id
@@ -70,12 +70,7 @@ func (i *DbInsert) ToSql() string {
 
 		for index := 0; index < len(i.keyArr); index++ {
 			value := valMap[i.keyArr[index]]
-			switch value.(type) {
-			case string:
-				valueArr = append(valueArr, fmt.Sprintf("'%s'", value))
-			default:
-				valueArr = append(valueArr, gStr.FormatAny(value))
-			}
+			valueArr = append(valueArr, gStr.FormatAll(value, true))
 		}
 
 		valArr = append(valArr, gStr.Merge("(", strings.Join(valueArr, ","), ")"))
@@ -87,26 +82,32 @@ func (i *DbInsert) ToSql() string {
 		"insert into %s (%s) values %s",
 		i.table, keyStr, valStr)
 
-	gFmt.Println(sqlStr)
+	gLog.Sql("insert", sqlStr)
 
 	return sqlStr
 }
 
 func (i *DbInsert) appendValueMap(bean interface{}) {
-
 	values := make(map[string]interface{})
 	value := reflect.ValueOf(bean)
+
+	//if value ptr
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+	}
 
 	for index := 0; index < value.NumField(); index++ {
 		t := value.Type().Field(index)
 		v := value.Field(index)
 
-		values[t.Tag.Get(DB_TAG)] = v.Interface()
-		//str := fmt.Sprintf("name:%v,type:%v,fieldName:%v,value:%v", t.Name, t.Type, t.Tag.Get(DB_TAG), v)
-		//gFmt.Println(str)
+		if t.Tag.Get(DB_TAG) != "" {
+			values[t.Tag.Get(DB_TAG)] = v.Interface()
+			//str := fmt.Sprintf("name:%v,type:%v,fieldName:%v,value:%v", t.Name, t.Type, t.Tag.Get(DB_TAG), v)
+			//gFmt.Println(str)
 
-		if len(i.valueMap) == 0 {
-			i.keyArr = append(i.keyArr, t.Tag.Get(DB_TAG))
+			if len(i.valueMap) == 0 {
+				i.keyArr = append(i.keyArr, t.Tag.Get(DB_TAG))
+			}
 		}
 	}
 

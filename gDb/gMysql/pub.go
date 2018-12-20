@@ -5,8 +5,6 @@ import (
 	"strings"
 	"database/sql"
 	"github.com/lucky-lee/gutil/gStr"
-	"reflect"
-	"strconv"
 )
 
 type DbBase struct {
@@ -19,16 +17,23 @@ type DbBase struct {
 //type PubFunc interface {
 //	ToSql() string
 //}
+type Set struct {
+	Key         string
+	Val         interface{}
+	ValStrQuote bool
+}
 
 type Where struct {
-	Key    string
-	Symbol string
-	Val    interface{}
+	Key         string
+	Symbol      string
+	Val         interface{}
+	ValStrQuote bool
 }
 
 const (
-	PAGE_SIZE = 10
-	DB_TAG    = "field"
+	PAGE_SIZE     = 10
+	DB_TAG        = "field"
+	DB_TAG_IFNULL = "ifnull"
 )
 
 var defDb *sql.DB //默认的数据库
@@ -37,28 +42,44 @@ var defDb *sql.DB //默认的数据库
 func SetDefDb(db *sql.DB) {
 	defDb = db
 }
+func NewSet(key string, val interface{}, valQuote bool) Set {
+	var s Set
 
-func NewWhere(key string, symbol string, val interface{}) Where {
+	s.Key = key
+	s.Val = val
+	s.ValStrQuote = valQuote
+
+	return s
+}
+
+func NewWhere(key string, symbol string, val interface{}, valQuote bool) Where {
 	var w Where
 
 	w.Key = key
 	w.Symbol = symbol
 	w.Val = val
+	w.ValStrQuote = valQuote
 
 	return w
 }
 
 //get set string
-func pubSetStr(setMap map[string]interface{}) string {
+func pubSetStr(setMap map[string]Set) string {
 	if len(setMap) == 0 {
 		return ""
 	}
 
 	var sets []string
 
-	for key, val := range setMap {
-		str := fmt.Sprintf(`%s=%s`, key, gStr.FormatAny(val))
-		sets = append(sets, str)
+	for _, val := range setMap {
+		var str string
+
+		valStr := gStr.FormatAll(val.Val, val.ValStrQuote)
+
+		if valStr != "" && valStr != `""` {
+			str = fmt.Sprintf(`%s=%s`, val.Key, valStr)
+			sets = append(sets, str)
+		}
 	}
 
 	return strings.Join(sets, ",")
@@ -73,29 +94,23 @@ func pubWhereStr(whereMap map[string]Where) string {
 	var wheres []string
 
 	for _, val := range whereMap {
-		str := fmt.Sprintf("%s %s %s", val.Key, val.Symbol, gStr.FormatAny(val.Val))
+		str := fmt.Sprintf("%s %s %s", val.Key, val.Symbol, gStr.FormatAll(val.Val, val.ValStrQuote))
 		wheres = append(wheres, str)
 	}
 
 	return strings.Join(wheres, " and ")
 }
 
-//quote string
-func pubQuoteStr(val interface{}) interface{} {
-	value := reflect.ValueOf(val)
-
-	switch value.Kind() {
-	case reflect.String:
-		return strconv.Quote(value.String())
-	default:
-		return val
-	}
-}
-
 func fieldName(asName string, fieldName string) string {
 	if asName == "" {
 		return fieldName
 	} else {
-		return gStr.Merge(asName, ".", fieldName)
+		if strings.Contains(fieldName, "ifnull(") {
+			repStr := fmt.Sprintf("ifnull(%s.", asName)
+			str := strings.Replace(fieldName, "ifnull(", repStr, -1)
+			return str
+		} else {
+			return gStr.Merge(asName, ".", fieldName)
+		}
 	}
 }
