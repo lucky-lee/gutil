@@ -1,6 +1,6 @@
 package gutil
 
-var logName = "gutil" //日志名称
+var logName = "gutil" //log file name
 
 func SetLogName(value string) {
 	logName = value
@@ -8,4 +8,14 @@ func SetLogName(value string) {
 
 func GetLogName() string {
 	return logName
+}
+
+var logDay = 5 //log file will keep 15 days
+
+func SetLogDay(day int) {
+	logDay = day
+}
+
+func GetLogDay() int {
+	return logDay
 }

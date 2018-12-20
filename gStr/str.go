@@ -1,13 +1,13 @@
 package gStr
 
 import (
+	"bytes"
 	"crypto/md5"
 	"encoding/hex"
 	"math/rand"
-	"time"
-	"bytes"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 //字符串截取
@@ -77,13 +77,21 @@ func RandNum(length int) string {
 	return Rand(length, 1)
 }
 
+func RandStr(length int) string {
+	return Rand(length, 0)
+}
+
 //format any one
 func FormatAny(value interface{}) string {
-	return formatAny(reflect.ValueOf(value))
+	return formatAny(reflect.ValueOf(value), true)
+}
+
+func FormatAll(v interface{}, strQuote bool) string {
+	return formatAny(reflect.ValueOf(v), strQuote)
 }
 
 //format type any one to string
-func formatAny(value reflect.Value) string {
+func formatAny(value reflect.Value, strQuote bool) string {
 	switch value.Kind() {
 	case reflect.Invalid:
 		return "invalid"
@@ -98,7 +106,11 @@ func formatAny(value reflect.Value) string {
 	case reflect.Bool:
 		return strconv.FormatBool(value.Bool())
 	case reflect.String:
-		return value.String()
+		if strQuote {
+			return strconv.Quote(value.String())
+		} else {
+			return value.String()
+		}
 	case reflect.Chan, reflect.Func, reflect.Ptr, reflect.Slice, reflect.Map:
 		return value.Type().String() + " 0x" +
 			strconv.FormatUint(uint64(value.Pointer()), 16)

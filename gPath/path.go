@@ -1,12 +1,12 @@
 package gPath
 
 import (
-	"path/filepath"
-	"os"
-	"log"
-	"strings"
 	"fmt"
 	"github.com/lucky-lee/gutil"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 //当前目录
@@ -18,15 +18,18 @@ func Current() string {
 	return strings.Replace(dir, "\\", "/", -1) //将\替换成/
 }
 
-func Base() string {
+func BaseLog() string {
 	return fmt.Sprintf("%s/%s/", Current(), gutil.GetLogName())
 }
 
-func ByName(name string) string {
-	return Base() + name + "/"
+func LogByName(name string) string {
+	return BaseLog() + name + "/"
 }
 
-func Tmp() string {
-	return ByName("tmp")
+func LogTmp() string {
+	return LogByName("tmp")
 }
 
+func Static() string {
+	return fmt.Sprintf("%s/static", Current())
+}

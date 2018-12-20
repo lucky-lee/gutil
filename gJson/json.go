@@ -19,7 +19,7 @@ func Encode(i interface{}) string {
 }
 
 //json decode
-func Decode(s string, i *interface{}) {
+func Decode(s string, i interface{}) {
 	err := json.Unmarshal([]byte(s), i)
 
 	if err != nil {

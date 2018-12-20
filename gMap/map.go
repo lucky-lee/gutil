@@ -4,10 +4,11 @@ import (
 	"sort"
 	"net/url"
 	"github.com/lucky-lee/gutil"
+	"github.com/lucky-lee/gutil/gStr"
 )
 
 //string val值的map排序
-func MapStrSortKey(useMap map[string]string) []gutil.StrBean {
+func MapSortKey(useMap map[string]interface{}) []gutil.StrBean {
 	var keys []string
 	var retSlice []gutil.StrBean
 
@@ -21,7 +22,7 @@ func MapStrSortKey(useMap map[string]string) []gutil.StrBean {
 		var bean gutil.StrBean
 
 		bean.Key = val
-		bean.Val = useMap[val]
+		bean.Val = gStr.FormatAll(useMap[val], false) //useMap[val]
 
 		retSlice = append(retSlice, bean)
 	}
@@ -49,15 +50,15 @@ func MapStrMerge(map1 map[string]string, map2 map[string]string) (map[string]str
 }
 
 //字符串map 转queryString
-func MapStrToQueryStr(useMap map[string]string) string {
+func MapStrToQueryStr(useMap map[string]interface{}) string {
 	if useMap == nil {
 		return ""
 	}
 	var retStr string
 	for key, val := range useMap {
-		retStr += key + "=" + url.QueryEscape(val) + "&"
+		retStr += key + "=" + url.QueryEscape(gStr.FormatAll(val, false)) + "&"
 	}
 
-	retStr = retStr[0:len(retStr)-1]
+	retStr = retStr[0 : len(retStr)-1]
 	return retStr
 }

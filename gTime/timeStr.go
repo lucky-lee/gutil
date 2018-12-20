@@ -1,17 +1,18 @@
 package gTime
 
 import (
-	"time"
+	"fmt"
 	"strconv"
+	"time"
 )
 
-//时间字符串 转时间戳
+//time string covert timestamp
 func StrToTs(timeStr string) (int64) {
 	theTime, _ := time.ParseInLocation(STR_TIME_ALL, timeStr, Loc())
 	return theTime.Unix()
 }
 
-//时间字符串 精确
+//accurate timestamp string
 func StrAccurate(ts int64) string {
 	var retStr string
 	nowTs := TsNow()
@@ -32,7 +33,43 @@ func StrAccurate(ts int64) string {
 	return retStr
 }
 
-//时间字符串 当前
+//now time string
 func StrNow() string {
-	return time.Unix(time.Now().Unix(), 0).Format(STR_TIME_ALL)
+	return time.Now().Format(STR_TIME_ALL)
+}
+
+//date string today
+func StrDateToday() (dateStr string) {
+	return StrDate(time.Now().Unix())
+}
+
+//date string today begin time
+func StrDateTodayBegin() string {
+	return fmt.Sprintf("%s 00:00:00", StrDateToday())
+}
+
+//date string today end time
+func StrDateTodayEnd() string {
+	return fmt.Sprintf("%s 23:59:59", StrDateToday())
+}
+
+//date string yesterday
+func StrDateYesterday() (dateStr string) {
+	return StrDateDay(-1)
+}
+
+//date string tomorrow
+func StrDateTomorrow() (dateStr string) {
+	return StrDateDay(1)
+}
+
+//date string use days
+func StrDateDay(days int) (dateStr string) {
+	ts := time.Now().AddDate(0, 0, days).Unix()
+	return StrDate(ts)
+}
+
+//date string use timestamp
+func StrDate(ts int64) (dateStr string) {
+	return time.Unix(ts, 0).Format(STR_TIME_YMD)
 }

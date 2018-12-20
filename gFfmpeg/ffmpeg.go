@@ -1,17 +1,17 @@
 package gFfmpeg
 
 import (
-	"os/exec"
-	"github.com/lucky-lee/gutil/gPath"
-	"github.com/lucky-lee/gutil/gFile"
 	"github.com/lucky-lee/gutil/gCommand"
+	"github.com/lucky-lee/gutil/gFile"
+	"github.com/lucky-lee/gutil/gPath"
+	"os/exec"
 )
 
 //amr -> mp3
-func AmrToMp3(url string, name string) string {
-	filePath := gPath.ByName("ffmpeg/mp3")
+func AmrToMp3(url string, fileName string) string {
+	filePath := gPath.LogByName("ffmpeg/mp3")
 
-	filePathName := filePath + name
+	filePathName := filePath + fileName
 
 	gFile.DirAutoCreate(filePath) //创建文件夹
 
@@ -22,9 +22,9 @@ func AmrToMp3(url string, name string) string {
 }
 
 //wav -> amr
-func WavToAmr(url string, name string) string {
-	filePath := gPath.ByName("ffmpeg/amr")
-	filePathName := filePath + name
+func WavToAmr(url string, fileName string) string {
+	filePath := gPath.LogByName("ffmpeg/amr")
+	filePathName := filePath + fileName
 
 	gFile.DirAutoCreate(filePath) //创建文件夹
 
@@ -35,9 +35,9 @@ func WavToAmr(url string, name string) string {
 }
 
 //视频第一帧
-func VideoFirstFrame(url string, name string) string {
-	filePath := gPath.ByName("ffmpeg/videoFrame")
-	filePathName := filePath + name
+func VideoFirstFrame(url string, fileName string) string {
+	filePath := gPath.LogByName("ffmpeg/videoFrame")
+	filePathName := filePath + fileName
 
 	gFile.DirAutoCreate(filePath) //创建文件夹
 

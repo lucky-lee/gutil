@@ -15,8 +15,8 @@ func Download(url string, localPath string) string {
 	var filePath string //file path
 
 	if localPath == "" { //no file path use tmp path
-		filePath = gPath.Tmp()
-		DirAutoCreate(gPath.Tmp())
+		filePath = gPath.LogTmp()
+		DirAutoCreate(gPath.LogTmp())
 	} else {
 		filePath = localPath
 	}
@@ -46,7 +46,7 @@ func Download(url string, localPath string) string {
 
 	if IsExist(fileLocal) {
 		gFmt.Println("already exist file:", fileLocal)
-		return ""
+		return fileName
 	}
 
 	if resp.StatusCode == http.StatusOK { //http code equal 200 and download
