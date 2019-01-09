@@ -83,7 +83,7 @@ func fileLogName(name string) string {
 func formatContent(desc string, format string, val interface{}) string {
 	var str string
 	if val != nil {
-		str = fmt.Sprintf("[%s-%s] %s | %s \n %s", gutil.GetLogName(), desc, gTime.StrNow(), format, val)
+		str = fmt.Sprintf("[%s-%s] %s | %s \n %v", gutil.GetLogName(), desc, gTime.StrNow(), format, val)
 	} else {
 		str = fmt.Sprintf("[%s-%s] %s | %s", gutil.GetLogName(), desc, gTime.StrNow(), format)
 	}
