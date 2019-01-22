@@ -11,6 +11,9 @@ import (
 )
 
 //字符串截取
+//str 需要截取的字符串
+//begin 开始的位置
+//length 需要截取的长度
 func Sub(str string, begin int, length int) string {
 	rs := []rune(str)
 	lth := len(rs)
@@ -19,10 +22,19 @@ func Sub(str string, begin int, length int) string {
 	if begin < 0 {
 		begin = 0
 	}
+
+	// 超过最大长度
 	if begin >= lth {
 		begin = lth
 	}
+
+	//长度为0 截取到结尾
+	if length == 0 {
+		return string(rs[begin:])
+	}
+
 	end := begin + length
+
 	if end > lth {
 		end = lth
 	}
