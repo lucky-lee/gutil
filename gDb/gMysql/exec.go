@@ -6,18 +6,18 @@ import (
 )
 
 //exec easy
-func ExecEasy(sqlStr string, db *sql.DB) bool {
+func ExecEasy(sqlStr string, db *sql.DB, args ...interface{}) bool {
 	gLog.Sql("execEasySql", sqlStr) //add sql log
 
-	result, err := db.Exec(sqlStr)
+	result, err := db.Exec(sqlStr, args)
 	return exec(result, err)
 }
 
 //exec easy and return last id
-func execEasyLastId(sqlStr string, db *sql.DB) int64 {
+func execEasyLastId(sqlStr string, db *sql.DB, args ...interface{}) int64 {
 	gLog.Sql("execEasyLastIdSql", sqlStr) //add sql log
 
-	result, err := db.Exec(sqlStr)
+	result, err := db.Exec(sqlStr, args)
 	return execLastId(result, err)
 }
 
