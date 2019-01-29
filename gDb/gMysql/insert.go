@@ -58,7 +58,7 @@ func (i *DbInsert) Do() bool {
 //insert and return last id
 func (i *DbInsert) DoLastId() int64 {
 	sqlStr := i.ToSql()
-	return execEasyLastId(sqlStr, i.db)
+	return ExecEasyLastId(sqlStr, i.db)
 }
 
 //create insert sql string
