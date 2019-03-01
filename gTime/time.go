@@ -16,7 +16,7 @@ const (
 )
 
 func Loc() *time.Location {
-	loc, _ := time.LoadLocation("Asia/Shanghai")
+	loc, _ := time.LoadLocation("Local")
 	return loc
 }
 
