@@ -10,7 +10,7 @@ func GetLogName() string {
 	return logName
 }
 
-var logDay = 5 //log file will keep 15 days
+var logDay = 5 //log file will keep 5 days
 
 func SetLogDay(day int) {
 	logDay = day
