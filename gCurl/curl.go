@@ -138,7 +138,6 @@ func requestResponse(method string, url string, params string) *http.Response {
 	resp, err := httpClient.Do(req)
 
 	if err != nil {
-		defer resp.Body.Close()
 		gLog.E("requestRespErr", err)
 		return nil
 	}
