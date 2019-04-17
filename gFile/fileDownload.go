@@ -1,25 +1,23 @@
 package gFile
 
 import (
-	"net/http"
-	"os"
-	"io"
 	"github.com/lucky-lee/gutil/gFmt"
 	"github.com/lucky-lee/gutil/gPath"
 	"github.com/lucky-lee/gutil/gStr"
+	"io"
+	"net/http"
+	"os"
 )
 
 //file download
 func Download(url string, localPath string) string {
 	gFmt.Println("下载文件地址:", url)
-	var filePath string //file path
 
 	if localPath == "" { //no file path use tmp path
-		filePath = gPath.LogTmp()
-		DirAutoCreate(gPath.LogTmp())
-	} else {
-		filePath = localPath
+		localPath = gPath.LogTmp()
 	}
+
+	DirAutoCreate(localPath) //auto create dir
 
 	resp, err := http.Get(url)
 
@@ -39,7 +37,7 @@ func Download(url string, localPath string) string {
 	}
 
 	fileName := DownloadFullName(url, fileContentType)
-	fileLocal := filePath + fileName //local file path
+	fileLocal := localPath + fileName //local file path
 
 	gFmt.Println("localFilePath:", fileLocal)
 	gFmt.Println("statusCode", resp.StatusCode)
