@@ -18,16 +18,33 @@ func StrAccurate(ts int64) string {
 	nowTs := TsNow()
 	offset := nowTs - ts
 
-	if offset < 60 {
-		retStr = strconv.FormatInt(offset, 10) + "秒前"
-	} else if offset < 3600 {
-		retStr = strconv.FormatInt(offset/60, 10) + "分钟前"
-	} else if offset < 86400 {
-		retStr = strconv.FormatInt(offset/3600, 10) + "小时前"
-	} else if offset < 259200 {
-		retStr = strconv.FormatInt(offset/86400, 10) + "天前"
-	} else {
-		retStr = TsFormatYmd(ts)
+	if offset >= 0 { //以前
+		if offset < 60 {
+			retStr = strconv.FormatInt(offset, 10) + "秒前"
+		} else if offset < 3600 {
+			retStr = strconv.FormatInt(offset/60, 10) + "分钟前"
+		} else if offset < 86400 {
+			retStr = strconv.FormatInt(offset/3600, 10) + "小时前"
+		} else if offset < 259200 {
+			retStr = strconv.FormatInt(offset/86400, 10) + "天前"
+		} else {
+			retStr = TsFormatYmd(ts)
+		}
+	} else { //未来
+		offset = ts - nowTs
+
+		if offset < 60 {
+			retStr = strconv.FormatInt(offset, 10) + "秒后"
+		} else if offset < 3600 {
+			retStr = strconv.FormatInt(offset/60, 10) + "分钟后"
+		} else if offset < 86400 {
+			retStr = strconv.FormatInt(offset/3600, 10) + "小时后"
+		} else if offset < 259200 {
+			retStr = strconv.FormatInt(offset/86400, 10) + "天后"
+		} else {
+			retStr = TsFormatYmd(ts)
+		}
+
 	}
 
 	return retStr
