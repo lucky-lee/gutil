@@ -2,6 +2,7 @@ package gMysql
 
 import (
 	"database/sql"
+	"github.com/lucky-lee/gutil/gJson"
 	"github.com/lucky-lee/gutil/gLog"
 )
 
@@ -9,22 +10,24 @@ import (
 func ExecEasy(sqlStr string, db *sql.DB, args ...interface{}) bool {
 	gLog.Sql("execEasySql", sqlStr) //add sql log
 
-	result, err := db.Exec(sqlStr, args...)
-	return exec(result, err)
+	return exec(sqlStr, db, args...)
 }
 
 //exec easy and return last id
 func ExecEasyLastId(sqlStr string, db *sql.DB, args ...interface{}) int64 {
 	gLog.Sql("execEasyLastIdSql", sqlStr) //add sql log
 
-	result, err := db.Exec(sqlStr, args...)
-	return execLastId(result, err)
+	return execLastId(sqlStr, db, args...)
 }
 
 //exec
-func exec(result sql.Result, err error) bool {
+func exec(sqlStr string, db *sql.DB, args ...interface{}) bool {
+	result, err := db.Exec(sqlStr, args...)
+
 	if err != nil {
 		gLog.E("sqlErr", err)
+		gLog.E("sqlErrSql", sqlStr)
+		gLog.E("sqlErrParams", gJson.Encode(args))
 		return false
 	}
 
@@ -32,6 +35,8 @@ func exec(result sql.Result, err error) bool {
 
 	if err != nil {
 		gLog.E("sqlErr", err)
+		gLog.E("sqlErrSql", sqlStr)
+		gLog.E("sqlErrParams", gJson.Encode(args))
 		return false
 	}
 
@@ -43,9 +48,13 @@ func exec(result sql.Result, err error) bool {
 }
 
 //exec and return last last id
-func execLastId(result sql.Result, err error) int64 {
+func execLastId(sqlStr string, db *sql.DB, args ...interface{}) int64 {
+	result, err := db.Exec(sqlStr, args...)
+
 	if err != nil {
 		gLog.E("sqlErr", err)
+		gLog.E("sqlErrSql", sqlStr)
+		gLog.E("sqlErrParams", gJson.Encode(args))
 		return 0
 	}
 
@@ -53,6 +62,8 @@ func execLastId(result sql.Result, err error) int64 {
 
 	if err != nil {
 		gLog.E("sqlErr", err)
+		gLog.E("sqlErrSql", sqlStr)
+		gLog.E("sqlErrParams", gJson.Encode(args))
 		return 0
 	}
 
