@@ -92,6 +92,11 @@ func formatContent(desc string, format string, val interface{}) string {
 
 //write content to log file
 func toFile(name string, fileDir string, desc string, value interface{}) {
+	//out stdout
+	if OutputType() == OUTPUT_STDOUT {
+		Log(name, desc, value)
+		return
+	}
 	//create dir
 	gFile.DirAutoCreate(fileDir)
 
