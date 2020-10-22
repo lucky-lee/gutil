@@ -15,7 +15,13 @@ func Current() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return strings.Replace(dir, "\\", "/", -1) //将\替换成/
+
+	dirStr := strings.Replace(dir, "\\", "/", -1) //将\替换成/
+
+	if dirStr == "/" {
+		return ""
+	}
+	return dirStr
 }
 
 func CurrentFile(s string) string {
